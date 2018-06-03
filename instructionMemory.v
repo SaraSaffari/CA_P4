@@ -28,7 +28,7 @@ module instructionMemory(clock, address, instruction);
       begin  
                 commands[0] = {2'b00, 3'b000, 3'b111, 3'b000, 3'b000, 5'b00000};  //ADD R7, R0, R0
                 commands[1] = {2'b00, 3'b000, 3'b001, 3'b000, 3'b000, 5'b00000};  //ADD R1, R0, R0
-                commands[2] = {2'b01, 3'b010, 3'b011, 3'b001, 8'd20};    // SUBI R3, R1, 20
+                commands[2] = {2'b01, 3'b010, 3'b011, 3'b000, 8'd20};    // SUBI R3, R1, 20
                 commands[3] = {3'b101, 2'b00, 6'd0, 8'd10};  				//BZ END
                 commands[4] = {3'b100, 2'b00, 3'b010, 3'b001, 8'd100 };    //LDM R2, 100(R1)
                 commands[5] = {2'b00, 3'b010, 3'b011, 3'b111, 3'b010, 5'b00000};   //SUB R3, R7, R2 
