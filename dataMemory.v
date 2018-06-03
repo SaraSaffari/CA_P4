@@ -1,5 +1,5 @@
-module dataMemory(clock, memWrite, memRead, address, data, out);
-	input clock, memWrite, memRead;
+module dataMemory(clock, memWrite, address, data, out);
+	input clock, memWrite;
 	input[7:0] address, data;
 	output [7:0] out;
 
