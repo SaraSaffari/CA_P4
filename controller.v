@@ -1,21 +1,18 @@
 module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteDataSel, selectR2, AluInputBSel, ALUfunction,
-	STM, LDM, enablePC, enableZero, enableCarry, pcAdderInputBSel, push, pop, pcInputSel);
+	STM, LDM, /*enablePC,*/ enableZero, enableCarry, pcAdderInputBSel, push, pop, pcInputSel);
 
 	input clock, init_signal;
 	input[18:0]allBits;
 	input Zero, CarryOut;
 
-	output reg selectR2, AluInputBSel, STM, LDM, enablePC, enableZero, enableCarry, push, pop;
+	output reg selectR2, AluInputBSel, STM, LDM/*, enablePC*/, enableZero, enableCarry, push, pop;
 	output reg [1:0] pcInputSel;
 	output reg pcAdderInputBSel;
 	output reg regFileWriteDataSel;
 	output reg[3:0]ALUfunction;  //TODO: it should be 3 bits and add shiftrotate operation upcodes
-	
-	wire bit_17_;
-	assign bit_17_ = allBits[17];
 
-	always @(posedge clock)
-		enablePC <= 1'b1;
+	// always @(posedge clock)
+	// 	enablePC <= 1'b1;
 
 	wire[1:0]lasttwoBits;
 	assign lasttwoBits = allBits[18:17];
@@ -42,8 +39,8 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 			2'b 00 : begin 
 				LDM <= 1'b1;
 				ALUfunction <= {1'b1, threeBitFn};
-				AluInputBSel <= ~bit_17_; // with 1 signal the mux choses usual 
-				selectR2 <= 1'b1; // with 1 signal the mux choses[7:5]
+				AluInputBSel <= 1'b0; // with 1 signal the mux choses usual 
+				selectR2 <= 1'b0; // with 1 signal the mux choses[7:5]
 				regFileWriteDataSel <= 1'b1; // with 00 signal the mux choses result of ALU
 				enableCarry<= 1'b1;
 				enableZero <= 1'b1;
@@ -51,7 +48,7 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 			2'b 01 : begin 
 				LDM <= 1'b1;
 				ALUfunction <= {1'b1, threeBitFn};
-				AluInputBSel <= ~bit_17_; //with 0 signal the mux choses immediate 
+				AluInputBSel <= 1'b1; //with 0 signal the mux choses immediate 
 				selectR2 <= 1'b1; // with 1 signal the mux choses[7:5]
 				regFileWriteDataSel <= 1'b1; // with 00 signal the mux choses result of ALU 
 				enableCarry <= 1'b1;
@@ -74,7 +71,7 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 
 				if(twoBitFn == 2'b01) begin
 					STM <= 1'b1;
-					selectR2 <= 1'b0; // with 0 signal the mux choses[13:11]
+					selectR2 <= 1'b1; // with 0 signal the mux choses[13:11]
 				end
 			end 
 		endcase
