@@ -29,7 +29,7 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 	wire[5:0]lastsixBits;
 	assign lastsixBits = allBits[18:13];
 
-	always @(init_signal, allBits) begin
+	always @(init_signal, allBits, CarryOut) begin
 		LDM <= 1'b0; STM <= 1'b0;
 		enableCarry <= 1'b0;
 		enableZero <= 1'b0;

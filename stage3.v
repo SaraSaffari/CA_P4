@@ -41,10 +41,10 @@ module stage3(clk, rst, r1, r2, disp_const, aluBInputSel, ZOutput, COutput, shif
 	ALU alu(
 		.inputA(aluInputA),
 		.inputB(aluInputB),
-		.carryIn(COutput),
+		.carryIn(CInput),
 		.operation(ALUOperation),
 		.result(ALUOUT),
-		.carryOut(CInput),
+		.carryOut(COutput),
 		.zero(ZInput),
 		.shiftCount(shiftCount)
 	);	
@@ -54,8 +54,8 @@ module stage3(clk, rst, r1, r2, disp_const, aluBInputSel, ZOutput, COutput, shif
 		.clock(clk),
 		.reset(rst),
 		.enable(CEn),
-		.regIn(CInput),
-		.regOut(COutput)
+		.regIn(COutput),
+		.regOut(CInput)
 	);
 
 	registerWitEnb #(.size(1)) Z(

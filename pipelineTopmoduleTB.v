@@ -5,7 +5,7 @@ module AAAAAAAAAATB();
   reg rst = 1;
   
   initial repeat (15) #3 init = ~init;
-  initial repeat (300) #70 clk = ~clk;
+  initial repeat (500) #70 clk = ~clk;
 
   initial begin
     #100
