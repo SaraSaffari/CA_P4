@@ -1,13 +1,13 @@
 module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteDataSel, selectR2, AluInputBSel, ALUfunction,
-	STM, LDM, /*enablePC,*/ enableZero, enableCarry, pcAdderInputBSel, push, pop, pcInputSel);
+	STM, LDM, /*enablePC,*/ enableZero, enableCarry, pcAdderInputASel, push, pop, pcInputSel, stall);
 
 	input clock, init_signal;
 	input[18:0]allBits;
 	input Zero, CarryOut;
-
+	output reg stall;
 	output reg selectR2, AluInputBSel, STM, LDM/*, enablePC*/, enableZero, enableCarry, push, pop;
 	output reg [1:0] pcInputSel;
-	output reg pcAdderInputBSel;
+	output reg pcAdderInputASel;
 	output reg regFileWriteDataSel;
 	output reg[3:0]ALUfunction;  //TODO: it should be 3 bits and add shiftrotate operation upcodes
 
@@ -33,7 +33,9 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 		LDM <= 1'b0; STM <= 1'b0;
 		enableCarry <= 1'b0;
 		enableZero <= 1'b0;
-		push <= 1'b0; pop <= 1'b0; pcInputSel <= 2'b00; pcAdderInputBSel <=1'b1;
+		ALUfunction <= 4'b1000;
+		push <= 1'b0; pop <= 1'b0; pcInputSel <= 2'b00; pcAdderInputASel <=1'b1;
+		stall <= 1'b0;
 
 		case(lasttwoBits)
 			2'b 00 : begin 
@@ -66,6 +68,7 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 			3'b 100: begin
 				if(twoBitFn == 2'b00) begin
 					LDM <= 1'b1;
+					ALUfunction <= 4'b1000;
 					regFileWriteDataSel <= 1'b0; // with 01 signal the mux choses result of dataMemory
 				end
 
@@ -78,30 +81,33 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 
 		case(lastthreeBits)
 			3'b 101: begin
-				// if ({twoBitFn , Zero} == 3'b 001) pcAdderInputBSel <= 2'b00;
+				// if ({twoBitFn , Zero} == 3'b 001) begin pcAdderInputASel <= 2'b00; end
 
-				if ({twoBitFn , Zero} == 3'b 001) pcAdderInputBSel <= 1'b0;
+				if ({twoBitFn , Zero} == 3'b 001) begin pcAdderInputASel <= 1'b0; stall <= 1'b1; end
 
-				// if ({twoBitFn , Zero} == 3'b 010) pcAdderInputBSel <= 2'b00;
+				// if ({twoBitFn , Zero} == 3'b 010) begin pcAdderInputASel <= 2'b00; stall <= 1'b1; end
 
-				if ({twoBitFn , Zero} == 3'b 010) pcAdderInputBSel <= 1'b0;
+				if ({twoBitFn , Zero} == 3'b 010) begin pcAdderInputASel <= 1'b0; stall <= 1'b1; end
 
-				// if ({twoBitFn , CarryOut} == 3'b 101) pcAdderInputBSel <= 2'b00;
+				// if ({twoBitFn , CarryOut} == 3'b 101) begin pcAdderInputASel <= 2'b00; stall <= 1'b1; end
 
-				if ({twoBitFn , CarryOut} == 3'b 101) pcAdderInputBSel <= 1'b0;
+				if ({twoBitFn , CarryOut} == 3'b 101) begin pcAdderInputASel <= 1'b0; stall <= 1'b1; end
 
-				// if ({twoBitFn , CarryOut} == 3'b 110) pcAdderInputBSel <= 2'b00;
+				// if ({twoBitFn , CarryOut} == 3'b 110) begin pcAdderInputASel <= 2'b00; stall <= 1'b1; end
 
-				if ({twoBitFn , CarryOut} == 3'b 110) pcAdderInputBSel <= 1'b0;
+				if ({twoBitFn , CarryOut} == 3'b 110) begin pcAdderInputASel <= 1'b0; stall <= 1'b1; end
 			end
 		endcase 
 
 		case(lastfiveBits)
-			5'b 11100: 
+			5'b 11100: begin
 				pcInputSel <= 2'b01;
+				stall <= 1'b1;
+				end
 
 			5'b 11101: begin
-				pcAdderInputBSel <= 2'b01;
+				pcAdderInputASel <= 2'b01;
+				stall <= 1'b1;
 				push <= 1'b1;
 				//TODO: is pc value in this clock, the correct pc value?
 			end
@@ -111,6 +117,7 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 			6'b 111100: begin
 				pop <= 1'b1;
 				pcInputSel <= 2'b10;
+				stall <= 1'b1;
 			end
 		endcase
 

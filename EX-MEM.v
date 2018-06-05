@@ -1,4 +1,4 @@
-module EX_MEM_pipline(clk, rst,IaluResult, Ir2, Idest, IDMMemWrite, IregWrite, IregWriteDataSel, OaluResult, Or2, Odest, ODMMemWrite, OregWrite, OregWriteDataSel);
+module EX_MEM_pipline(clk, rst, IaluResult, Ir2, Idest, IDMMemWrite, IregWrite, IregWriteDataSel, OaluResult, Or2, Odest, ODMMemWrite, OregWrite, OregWriteDataSel);
 	input clk, rst;
 	
 	input [7:0] IaluResult, Ir2;

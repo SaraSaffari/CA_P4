@@ -8,7 +8,7 @@ module registerFile(clock, regWrite, writeRegister, writeData, readRegister1, re
   assign readData1 = registers[readRegister1];
   assign readData2 = registers[readRegister2];
 
-  always @(posedge clock) begin
+  always @(posedge clock, negedge clock) begin
     if (regWrite)begin
       if(writeRegister != 0) registers[writeRegister] <= writeData;
     end

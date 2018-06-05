@@ -16,10 +16,10 @@ module pipeline(clk, rst, init);
 	wire [7:0] piplineInputDisp, pipelineOutputDisp;
 	wire [7:0] pipelineInputConst_disp, pipelineOutputConst_disp;
 	wire [1:0] pcInputSel;
-	wire pcAdderInputBSel;
+	wire pcAdderInputASel;
 	wire [11:0] stackOut;
 	wire [7:0] regFileWriteData;
-	wire Z, C;
+	wire Z, C, sstall;
 	wire [2:0] pipeline2InputDest, pipline2OutputDest;
 	wire [2:0] pipline3OutputDest, pipline4OutputDest;
 	wire [7:0] pipelineInputAluResult, pipeline3OutputAluResult, pipeline4OutputAluResult;
@@ -28,11 +28,13 @@ module pipeline(clk, rst, init);
 	wire pipeline2InputregWrite, pipeline2OutputregWrite, pipeline3OutputregWrite, pipeline4OutputregWrite;
 	wire pipeline2InputregWriteDataSel, pipeline2OutputregWriteDataSel, pipeline3OutputregWriteDataSel, pipeline4OutputregWriteDataSel;
 	wire pipelineInputZen, pipelineOutputZen, pipelineInputCen, pipelineOutputCen;
-
+	wire [1:0] aluInputAForwardingSel, aluInputBForwardingSel;
+	wire [2:0] pipelineInputR1Address, pipelineInputR2Address, piplineOutputR1Address, piplineOutputR2Address;
 	stage1 s1(
 		.clk(clk), 
 		.rst(rst), 
-		.pcAdderInputBSel(pcAdderInputBSel), 
+		.pcEnb(~sstall),
+		.pcAdderInputASel(pcAdderInputASel), 
 		.pcOut(piplineInputPc),
 		.disp({{4{pipelineInputConst_disp[7]}},pipelineInputConst_disp}),
 		.pcInputSel(pcInputSel),
@@ -44,6 +46,7 @@ module pipeline(clk, rst, init);
 	IF_ID_pipline if_id(
 		.clk(clk), 
 		.rst(rst), 
+		.enb(~sstall),
 		.Iinstruction(pipelineInputInstruction), 
 		.Ipc(piplineInputPc), 
 		.Oinstruction(pipelineOutputInstruction), 
@@ -65,7 +68,7 @@ module pipeline(clk, rst, init);
 		.AluInputBSel(pipelineInputAluInputBSel),
 		.ALUfunction(pipelineInputAluFunction),
 		.shiftCount(pipelineInputShiftCount),
-		.pcAdderInputBSel(pcAdderInputBSel), 
+		.pcAdderInputASel(pcAdderInputASel), 
 		.pcInputSel(pcInputSel),
 		.const_disp(pipelineInputConst_disp),
 		.dest(pipeline2InputDest),
@@ -75,12 +78,16 @@ module pipeline(clk, rst, init);
 		.LDM(pipeline2InputregWrite),
 		.controllerInput_regWrite(pipeline4OutputregWrite),
 		.Cenb(pipelineInputCen), 
-		.Zenb(pipelineInputZen)
+		.Zenb(pipelineInputZen),
+		.r1Address(pipelineInputR1Address),
+		.r2Address(pipelineInputR2Address),
+		.sstall(sstall)
 	);
 
 	ID_EX_pipline id_ex(
 		.clk(clk), 
 		.rst(rst), 
+		.enb(~sstall),
 		.Ir1(pipelineInputR1), 
 		.Ir2(pipelineInputR2), 
 		.Iconst_disp(pipelineInputConst_disp), 
@@ -93,6 +100,8 @@ module pipeline(clk, rst, init);
 		.IregWriteDataSel(pipeline2InputregWriteDataSel),
 		.IZenb(pipelineInputZen),
 		.ICenb(pipelineInputCen),
+		.Ir1Address(pipelineInputR1Address),
+		.Ir2Address(pipelineInputR2Address),
 		.Or1(pipelineOutputR1), 
 		.Or2(pipeline2OutputR2), 
 		.Oconst_dOsp(pipelineOutputConst_disp), 
@@ -104,7 +113,9 @@ module pipeline(clk, rst, init);
 		.OregWrite(pipeline2OutputregWrite), 
 		.OregWriteDataSel(pipeline2OutputregWriteDataSel),
 		.OZenb(pipelineOutputZen),
-		.OCenb(pipelineOutputCen)
+		.OCenb(pipelineOutputCen),
+		.Or1Address(piplineOutputR1Address),
+		.Or2Address(piplineOutputR2Address)
 	);
 
 	stage3 s3(
@@ -120,7 +131,23 @@ module pipeline(clk, rst, init);
 		.ALUOperation(pipelineOutputAluFunction),
 		.ALUOUT(pipelineInputAluResult),
 		.ZEn(piplineOutputZen), 
-		.CEn(pipelineOutputCen)
+		.CEn(pipelineOutputCen),
+		.aluInputAForwardingSel(aluInputAForwardingSel), 
+		.aluInputBForwardingSel(aluInputBForwardingSel),
+		.Ex_Mem_aluResult(pipeline3OutputAluResult), 
+		.Mem_Wb_aluResult(pipeline4OutputAluResult)
+	);
+	forwardingUnit FW(
+		.Ex_Mem_dest(pipline3OutputDest), 
+		.Ex_Mem_regWrite(pipeline3OutputregWrite), 
+		.Ex_Mem_regWriteDataSel(pipeline3OutputregWriteDataSel),
+		.Id_Ex_r1Address(piplineOutputR1Address), 
+		.Id_Ex_r2Address(piplineOutputR2Address), 
+		.Mem_Wb_regWrite(pipeline4OutputregWrite), 
+		.Mem_Wb_dest(pipline4OutputDest), 
+		.aluInputAForwardingSel(aluInputAForwardingSel), 
+		.aluInputBForwardingSel(aluInputBForwardingSel),
+		.stall(sstall)
 	);
 
 	EX_MEM_pipline ex_mem(

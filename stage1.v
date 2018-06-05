@@ -1,5 +1,5 @@
-module stage1(clk, rst, pcAdderInputBSel, pcOut, disp, pcInputSel, stackOutput, jumpAdr, instruction);
-	input pcAdderInputBSel;
+module stage1(clk, rst, pcEnb, pcAdderInputASel, pcOut, disp, pcInputSel, stackOutput, jumpAdr, instruction);
+	input pcAdderInputASel;
 	input clk, rst;
 	output [11:0] pcOut;
 	wire [11:0] pcIn;
@@ -7,12 +7,13 @@ module stage1(clk, rst, pcAdderInputBSel, pcOut, disp, pcInputSel, stackOutput, 
 	input [1:0] pcInputSel;
 	input [11:0] stackOutput;
 	input [11:0] jumpAdr;
+	input pcEnb;
 	output [18:0] instruction;
 	wire [11:0] pcAdderResult, pcAdderInputA;
 	mux_2_input  #(.WORD_LENGTH (12)) pcAdderInputAmux (    //mux 1
 		.in1(disp), 
 		.in2(12'd1), 
-		.sel(pcAdderInputBSel), 
+		.sel(pcAdderInputASel), 
 		.out(pcAdderInputA)
 	);
 
@@ -30,9 +31,10 @@ module stage1(clk, rst, pcAdderInputBSel, pcOut, disp, pcInputSel, stackOutput, 
 		.out(pcIn)
 	);
 
-	register #(.size(12)) pc(
+	registerWitEnb #(.size(12)) pc(
 		.clock(clk),
 		.reset(rst),
+		.enable(pcEnb),
 		.regIn(pcIn),
 		.regOut(pcOut)
 	);

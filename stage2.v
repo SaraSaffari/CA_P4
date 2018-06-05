@@ -1,12 +1,12 @@
-module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, readData1, readData2, Z, C, AluInputBSel, ALUfunction, shiftCount, pcAdderInputBSel, pcInputSel, const_disp, dest, writeAddress, DMMemWrite, ControllerOutput_regFileWriteDataSel, LDM, controllerInput_regWrite, Cenb, Zenb);
+module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, readData1, readData2, Z, C, AluInputBSel, ALUfunction, shiftCount, pcAdderInputASel, pcInputSel, const_disp, dest, writeAddress, DMMemWrite, ControllerOutput_regFileWriteDataSel, LDM, controllerInput_regWrite, Cenb, Zenb, r1Address, r2Address, sstall);
 	
 	//controller signals:
 	//stage 1 signals:
-	output pcAdderInputBSel;
+	output pcAdderInputASel;
 	output [1:0] pcInputSel;
 	//stage 2 signals:
 	wire push, pop;
-	wire selectR2;
+	// wire selectR2;
 	wire registerFileR2DataSel;
 
 	// stage 3 signals:
@@ -20,10 +20,29 @@ module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, 
 	output ControllerOutput_regFileWriteDataSel;
 	output LDM;
 
+
+	wire [18:0] controllerAllBits;
+	wire ControllerOutputStall;
+	
+	wire fuckingOutput;
+	register #(.size(1)) fuckingReg(
+		.clock(clk),
+		.reset(rst),
+		.regIn(ControllerOutputStall),
+		.regOut(fuckingOutput)
+	);
+
+	mux_2_input  #(.WORD_LENGTH (19)) controllerInstructionMux (    //mux 8
+		.in1(instruction), 
+		.in2({6'b111101,13'd0}), 
+		.sel(sstall | fuckingOutput), 
+		.out(controllerAllBits)
+	);
+
 	controller CU (
 		.init_signal(init), 
 		.clock(clk), 
-		.allBits(instruction), 
+		.allBits(controllerAllBits), 
 		.Zero(Z), 
 		.CarryOut(C), 
 		.regFileWriteDataSel(ControllerOutput_regFileWriteDataSel), 
@@ -35,13 +54,14 @@ module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, 
 		// .enablePC(pcEnb), 
 		.enableZero(Zenb), 
 		.enableCarry(Cenb), 
-		.pcAdderInputBSel(pcAdderInputBSel), 
+		.pcAdderInputASel(pcAdderInputASel), 
 		.push(push), 
 		.pop(pop), 
-		.pcInputSel(pcInputSel)
+		.pcInputSel(pcInputSel),
+		.stall(ControllerOutputStall)
 	);
 
-
+	input sstall;
 	input clk, rst, init;
 	input [7:0] regFileWriteData;
 	output [7:0] readData2, readData1;
@@ -55,6 +75,9 @@ module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, 
 	input [2:0] writeAddress;
 	input controllerInput_regWrite;
 	wire [2:0] registerFileR2Data;
+	output [2:0] r1Address, r2Address;
+	assign r1Address = instruction[10:8];
+	assign r2Address = registerFileR2Data;
 	assign dest = instruction[13:11];
 	assign shiftCount = instruction[7:5];
 	assign const_disp = instruction[7:0];
@@ -64,7 +87,7 @@ module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, 
 		.regWrite(controllerInput_regWrite), 
 		.writeRegister(writeAddress), 
 		.writeData(regFileWriteData), 
-		.readRegister1(instruction[10:8]), 
+		.readRegister1(r1Address), 
 		.readRegister2(registerFileR2Data), 
 		.readData1(readData1), 
 		.readData2(readData2)
