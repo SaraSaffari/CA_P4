@@ -21,7 +21,8 @@ module forwardingUnit(Ex_Mem_dest, Ex_Mem_regWrite,Ex_Mem_regWriteDataSel, Id_Ex
 			(Ex_Mem_regWrite == 1'b0 || Ex_Mem_dest != Id_Ex_r2Address))  aluInputBForwardingSel = 2'b10;
 
 		if(Ex_Mem_regWrite == 1'b1 && Ex_Mem_regWriteDataSel == 1'b0 &&
-			(Ex_Mem_dest == Id_Ex_r1Address || Ex_Mem_dest == Id_Ex_r2Address)) stall = 1'b1;
+			(Ex_Mem_dest == Id_Ex_r1Address || Ex_Mem_dest == Id_Ex_r2Address))
+			begin stall = 1'b1; aluInputBForwardingSel = 2'd2; end
 
 
 		

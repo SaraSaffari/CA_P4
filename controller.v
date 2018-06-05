@@ -101,12 +101,12 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 
 		case(lastfiveBits)
 			5'b 11100: begin
-				pcInputSel <= 2'b01;
+				pcInputSel <= 2'b10;
 				stall <= 1'b1;
 				end
 
 			5'b 11101: begin
-				pcAdderInputASel <= 2'b01;
+				pcInputSel <= 2'b10;
 				stall <= 1'b1;
 				push <= 1'b1;
 				//TODO: is pc value in this clock, the correct pc value?

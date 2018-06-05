@@ -135,7 +135,7 @@ module pipeline(clk, rst, init);
 		.aluInputAForwardingSel(aluInputAForwardingSel), 
 		.aluInputBForwardingSel(aluInputBForwardingSel),
 		.Ex_Mem_aluResult(pipeline3OutputAluResult), 
-		.Mem_Wb_aluResult(pipeline4OutputAluResult)
+		.Mem_Wb_aluResult(regFileWriteData)  //TODO: this was pipeline4OutputAluResult  
 	);
 	forwardingUnit FW(
 		.Ex_Mem_dest(pipline3OutputDest), 

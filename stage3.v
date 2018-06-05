@@ -40,7 +40,7 @@ module stage3(clk, rst, r1, r2, disp_const, aluBInputSel, ZOutput, COutput, shif
 
 	ALU alu(
 		.inputA(aluInputA),
-		.inputB(B),
+		.inputB(aluInputB),
 		.carryIn(COutput),
 		.operation(ALUOperation),
 		.result(ALUOUT),

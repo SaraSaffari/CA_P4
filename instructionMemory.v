@@ -37,6 +37,8 @@ module instructionMemory(clock, address, instruction);
                 commands[8] = {2'b01, 3'b000, 3'b001, 3'b001, 8'd1};  			//ADDI R1, R1, 1
                 commands[9] = {5'b11100, 2'b00, 12'd2};  //JMP LOOP;
                 commands[10] = {19'b0};
+
+
                 // commands[10] = 19'b0000000000000000000;  
                 // commands[11] = 19'b0000000000000000000;  
                 // commands[12] = 19'b0000000000000000000;  
