@@ -130,7 +130,7 @@ module pipeline(clk, rst, init);
 		.shiftCount(pipelineOutputShiftCount), 
 		.ALUOperation(pipelineOutputAluFunction),
 		.ALUOUT(pipelineInputAluResult),
-		.ZEn(piplineOutputZen), 
+		.ZEn(pipelineOutputZen), 
 		.CEn(pipelineOutputCen),
 		.aluInputAForwardingSel(aluInputAForwardingSel), 
 		.aluInputBForwardingSel(aluInputBForwardingSel),

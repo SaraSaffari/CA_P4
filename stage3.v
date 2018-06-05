@@ -45,7 +45,7 @@ module stage3(clk, rst, r1, r2, disp_const, aluBInputSel, ZOutput, COutput, shif
 		.operation(ALUOperation),
 		.result(ALUOUT),
 		.carryOut(COutput),
-		.zero(ZInput),
+		.zero(ZOutput),
 		.shiftCount(shiftCount)
 	);	
 
@@ -58,11 +58,11 @@ module stage3(clk, rst, r1, r2, disp_const, aluBInputSel, ZOutput, COutput, shif
 		.regOut(CInput)
 	);
 
-	registerWitEnb #(.size(1)) Z(
-		.clock(clk),
-		.reset(rst),
-		.enable(ZEn),
-		.regIn(ZInput),
-		.regOut(ZOutput)
-	);
+	// registerWitEnb #(.size(1)) Z(
+	// 	.clock(clk),
+	// 	.reset(rst),
+	// 	.enable(ZEn),
+	// 	.regIn(ZInput),
+	// 	.regOut(ZOutput)
+	// );
 endmodule

@@ -25,9 +25,9 @@ module dataMemory(clock, memWrite, address, data, out);
 		word[8'd116] <= 8'd15;
 		word[8'd117] <= 8'd120;
 		word[8'd118] <= 8'd1;
-		word[8'd119] <= 8'd1;
-		word[8'd120] <= 8'd1;
-		word[8'd121] <= 8'd1;
+		word[8'd119] <= 8'd2;
+		word[8'd120] <= 8'd3;
+		word[8'd121] <= 8'd4;
 	end
 	
 	always @(posedge clock) begin
