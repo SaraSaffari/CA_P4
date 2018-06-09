@@ -15,30 +15,31 @@ module instructionMemory(clock, address, instruction);
 	
 	initial begin
 		
-		// commands[0] = {3'b100, 2'b00, 3'b001, 3'b000, 8'd100};
-		// commands[1] = {3'b100, 2'b00, 3'b010, 3'b000, 8'd102};
-		// commands[2] = {2'b00, 3'b000, 3'b011, 3'b001, 3'b010, 5'b00000}; //ADD
-		// commands[3] = {3'b100, 2'b01, 3'b011, 3'b000, 8'd104}; // STORE
-		// commands[4] = {3'b100, 2'b00, 3'b001, 3'b000, 8'd101};
-		// commands[5] = {3'b100, 2'b00, 3'b010, 3'b000, 8'd103};
-		// commands[6] = {2'b00, 3'b001, 3'b011, 3'b001, 3'b010, 5'b00000}; //ADDC
-		// commands[7] = {3'b100, 2'b01, 3'b011, 3'b000, 8'd105}; // STORE
+		commands[0] = {3'b100, 2'b00, 3'b001, 3'b000, 8'd100};   //LDM TO R1
+		commands[1] = {3'b100, 2'b00, 3'b010, 3'b000, 8'd102};	//LDM TO R2
+											//R1      R2
+		commands[2] = {2'b00, 3'b000, 3'b011, 3'b001, 3'b010, 5'b00000}; //ADD
+		commands[3] = {3'b100, 2'b01, 3'b011, 3'b000, 8'd104}; // STORE
+		commands[4] = {3'b100, 2'b00, 3'b001, 3'b000, 8'd101};  //LDM TO R1
+		commands[5] = {3'b100, 2'b00, 3'b010, 3'b000, 8'd103};	//LDM TO R2
+		commands[6] = {2'b00, 3'b001, 3'b011, 3'b001, 3'b010, 5'b00000}; //ADDC
+		commands[7] = {3'b100, 2'b01, 3'b011, 3'b000, 8'd105}; // STORE
 	end
-		initial  
+	initial  
       begin  
       			//111101
-                commands[0] = {2'b00, 3'b000, 3'b111, 3'b000, 3'b000, 5'b00000};  //ADD R7, R0, R0
-                commands[1] = {2'b00, 3'b000, 3'b001, 3'b000, 3'b000, 5'b00000};  //ADD R1, R0, R0
-                commands[2] = {2'b01, 3'b010, 3'b011, 3'b001, 8'd20};    // SUBI R3, R1, 20
-                commands[3] = {3'b101, 2'b00, 6'd0, 8'd10};  				//BZ END
-                commands[4] = {3'b100, 2'b00, 3'b010, 3'b001, 8'd100 };    //LDM R2, 100(R1)
-                commands[5] = {2'b00, 3'b010, 3'b011, 3'b111, 3'b010, 5'b00000};   //SUB R3, R7, R2 
-                commands[6] = {3'b101, 2'b11, 6'b000000, 8'd1};   //BNC L1   if second number is
-                					// bigger:  the next line should be executed
-                commands[7] = {2'b00, 3'b000, 3'b111, 3'b010, 3'b000, 5'b00000};   //ADD R7, R2, R0
-                commands[8] = {2'b01, 3'b000, 3'b001, 3'b001, 8'd1};  			//ADDI R1, R1, 1
-                commands[9] = {5'b11100, 2'b00, 12'd2};  //JMP LOOP;
-                commands[10] = {19'b0};
+                // commands[0] = {2'b00, 3'b000, 3'b111, 3'b000, 3'b000, 5'b00000};  //ADD R7, R0, R0
+                // commands[1] = {2'b00, 3'b000, 3'b001, 3'b000, 3'b000, 5'b00000};  //ADD R1, R0, R0
+                // commands[2] = {2'b01, 3'b010, 3'b011, 3'b001, 8'd20};    // SUBI R3, R1, 20
+                // commands[3] = {3'b101, 2'b00, 6'd0, 8'd10};  				//BZ END
+                // commands[4] = {3'b100, 2'b00, 3'b010, 3'b001, 8'd100 };    //LDM R2, 100(R1)
+                // commands[5] = {2'b00, 3'b010, 3'b011, 3'b111, 3'b010, 5'b00000};   //SUB R3, R7, R2 
+                // commands[6] = {3'b101, 2'b11, 6'b000000, 8'd1};   //BNC L1   if second number is
+                // 					// bigger:  the next line should be executed
+                // commands[7] = {2'b00, 3'b000, 3'b111, 3'b010, 3'b000, 5'b00000};   //ADD R7, R2, R0
+                // commands[8] = {2'b01, 3'b000, 3'b001, 3'b001, 8'd1};  			//ADDI R1, R1, 1
+                // commands[9] = {5'b11100, 2'b00, 12'd2};  //JMP LOOP;
+                // commands[10] = {19'b0};
 
 
                 // commands[10] = 19'b0000000000000000000;  

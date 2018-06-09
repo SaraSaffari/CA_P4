@@ -1,18 +1,19 @@
-module EX_MEM_pipline(clk, rst, IaluResult, Ir2, Idest, IDMMemWrite, IregWrite, IregWriteDataSel, OaluResult, Or2, Odest, ODMMemWrite, OregWrite, OregWriteDataSel);
+module EX_MEM_pipline(clk, rst,enb, IaluResult, Ir2, Idest, IDMMemWrite, IregWrite, IregWriteDataSel, IR2Address, OaluResult, Or2, Odest, ODMMemWrite, OregWrite, OregWriteDataSel, OR2Address);
 	input clk, rst;
 	
 	input [7:0] IaluResult, Ir2;
-	input [2:0] Idest;
-	input IDMMemWrite, IregWrite, IregWriteDataSel;
+	input [2:0] Idest, IR2Address;
+	input IDMMemWrite, IregWrite, IregWriteDataSel, enb;
 
 	output [7:0] OaluResult, Or2;
-	output [2:0] Odest;	
+	output [2:0] Odest, OR2Address;	
 	output ODMMemWrite, OregWrite, OregWriteDataSel;
 
-	register #(.size(22)) Reg(
+	registerWitEnb #(.size(25)) Reg(
 		.clock(clk),
 		.reset(rst),
-		.regIn({IaluResult, Ir2, Idest, IDMMemWrite, IregWrite, IregWriteDataSel}),
-		.regOut({OaluResult, Or2, Odest, ODMMemWrite, OregWrite, OregWriteDataSel})
+		.enable(enb),
+		.regIn({IaluResult, Ir2, Idest, IDMMemWrite, IregWrite, IregWriteDataSel, IR2Address}),
+		.regOut({OaluResult, Or2, Odest, ODMMemWrite, OregWrite, OregWriteDataSel, OR2Address})
 	);
 endmodule

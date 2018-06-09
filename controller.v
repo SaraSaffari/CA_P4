@@ -70,11 +70,13 @@ module controller (init_signal, clock, allBits, Zero, CarryOut, regFileWriteData
 					LDM <= 1'b1;
 					ALUfunction <= 4'b1000;
 					regFileWriteDataSel <= 1'b0; // with 01 signal the mux choses result of dataMemory
+					AluInputBSel <= 1'b1;
 				end
 
 				if(twoBitFn == 2'b01) begin
 					STM <= 1'b1;
 					selectR2 <= 1'b1; // with 0 signal the mux choses[13:11]
+					AluInputBSel <= 1'b1;
 				end
 			end 
 		endcase

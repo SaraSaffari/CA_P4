@@ -29,7 +29,8 @@ module pipeline(clk, rst, init);
 	wire pipeline2InputregWriteDataSel, pipeline2OutputregWriteDataSel, pipeline3OutputregWriteDataSel, pipeline4OutputregWriteDataSel;
 	wire pipelineInputZen, pipelineOutputZen, pipelineInputCen, pipelineOutputCen;
 	wire [1:0] aluInputAForwardingSel, aluInputBForwardingSel;
-	wire [2:0] pipelineInputR1Address, pipelineInputR2Address, piplineOutputR1Address, piplineOutputR2Address;
+	wire [2:0] pipelineInputR1Address, pipelineInputR2Address, piplineOutputR1Address, piplineOutputR2Address, pipeline3OutputR2Address;
+	wire DataMemoryDataSel;
 	stage1 s1(
 		.clk(clk), 
 		.rst(rst), 
@@ -87,7 +88,7 @@ module pipeline(clk, rst, init);
 	ID_EX_pipline id_ex(
 		.clk(clk), 
 		.rst(rst), 
-		.enb(~sstall),
+		.enb(1'b1),
 		.Ir1(pipelineInputR1), 
 		.Ir2(pipelineInputR2), 
 		.Iconst_disp(pipelineInputConst_disp), 
@@ -140,34 +141,44 @@ module pipeline(clk, rst, init);
 	forwardingUnit FW(
 		.Ex_Mem_dest(pipline3OutputDest), 
 		.Ex_Mem_regWrite(pipeline3OutputregWrite), 
-		.Ex_Mem_regWriteDataSel(pipeline3OutputregWriteDataSel),
+		.Id_Ex_regWriteDataSel(pipeline2OutputregWriteDataSel),
+		.Id_Ex_regWrite(pipeline2OutputregWrite),
+		.Id_Ex_Dest(pipline2OutputDest),
 		.Id_Ex_r1Address(piplineOutputR1Address), 
 		.Id_Ex_r2Address(piplineOutputR2Address), 
 		.Mem_Wb_regWrite(pipeline4OutputregWrite), 
 		.Mem_Wb_dest(pipline4OutputDest), 
 		.aluInputAForwardingSel(aluInputAForwardingSel), 
 		.aluInputBForwardingSel(aluInputBForwardingSel),
-		.stall(sstall)
+		.stage2_out_r1Address(pipelineInputR1Address), 
+		.stage2_out_r2Address(pipelineInputR2Address),
+		.stall(sstall),
+		.DataMemoryDataSel(DataMemoryDataSel),
+		.Ex_Mem_r2Address(pipeline3OutputR2Address),
+		.aluInputBMuxSel(pipelineOutputAluInputBSel),
+		.clk(clk)
 	);
 
 	EX_MEM_pipline ex_mem(
 		.clk(clk), 
 		.rst(rst),
+		.enb(1'b1),
 		.IaluResult(pipelineInputAluResult), 
 		.Ir2(pipeline2OutputR2), 
 		.Idest(pipline2OutputDest), 
 		.IDMMemWrite(pipeline2OutputDMMemWrite),
 		.IregWrite(pipeline2OutputregWrite), 
 		.IregWriteDataSel(pipeline2OutputregWriteDataSel),
+		.IR2Address(piplineOutputR2Address),
 		//.IDMAddress(),  this is equal to IaluResult
 		.OaluResult(pipeline3OutputAluResult), 
 		.Or2(pipeline3OutputR2), 
 		.Odest(pipline3OutputDest),
 		.ODMMemWrite(pipeline3OutputDMMemWrite),
 		.OregWrite(pipeline3OutputregWrite), 
-		.OregWriteDataSel(pipeline3OutputregWriteDataSel)
+		.OregWriteDataSel(pipeline3OutputregWriteDataSel),
+		.OR2Address(pipeline3OutputR2Address)
 		//.ODMAddress()  this is equal to IaluResult
-
 	);
 
 	stage4 s4(
@@ -176,13 +187,16 @@ module pipeline(clk, rst, init);
 		.DMMemWrite(pipeline3OutputDMMemWrite), 
 		.DataMemoryAddress(pipeline3OutputAluResult), 
 		.dataMemoryOut(pipelineInputDMOut), 
-		.DMdataIn(pipeline3OutputAluResult)
+		.DMr2Out(pipeline3OutputAluResult),
+		.DMcalculatedRegData(pipeline4OutputAluResult),
+		.DataMemoryDataSel(DataMemoryDataSel)
 	);
 
 
 	MEM_WB_pipeline mem_wb(
 		.clk(clk), 
 		.rst(rst), 
+		.enb(1'b1),
 		.IData(pipelineInputDMOut), 
 		.IaluResult(pipeline3OutputAluResult), 
 		.Idest(pipline3OutputDest),
