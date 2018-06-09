@@ -1,4 +1,4 @@
-module instructionMemory(clock, address, instruction);
+  module instructionMemory(clock, address, instruction);
 	input clock;
 	input [11:0] address;
 	output wire [18:0] instruction;
@@ -27,7 +27,6 @@ module instructionMemory(clock, address, instruction);
 	end
 	initial  
       begin  
-      			//111101
                 // commands[0] = {2'b00, 3'b000, 3'b111, 3'b000, 3'b000, 5'b00000};  //ADD R7, R0, R0
                 // commands[1] = {2'b00, 3'b000, 3'b001, 3'b000, 3'b000, 5'b00000};  //ADD R1, R0, R0
                 // commands[2] = {2'b01, 3'b010, 3'b011, 3'b001, 8'd20};    // SUBI R3, R1, 20

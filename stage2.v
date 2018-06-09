@@ -24,18 +24,18 @@ module stage2(clk, rst, init, instruction, regFileWriteData, stackOut, stackIn, 
 	wire [18:0] controllerAllBits;
 	wire ControllerOutputStall;
 	
-	wire fuckingOutput;
-	register #(.size(1)) fuckingReg(
+	wire BadRegOutput;
+	register #(.size(1)) BadReg(
 		.clock(clk),
 		.reset(rst),
 		.regIn(ControllerOutputStall),
-		.regOut(fuckingOutput)
+		.regOut(BadRegOutput)
 	);
 
 	mux_2_input  #(.WORD_LENGTH (19)) controllerInstructionMux (    //mux 8
 		.in1(instruction), 
 		.in2({6'b111101,13'd0}), 
-		.sel(sstall | fuckingOutput), 
+		.sel(sstall | BadRegOutput), 
 		.out(controllerAllBits)
 	);
 
