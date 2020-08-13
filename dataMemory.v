@@ -1,15 +1,16 @@
 module dataMemory(clock, memWrite, address, data, out);
 	input clock, memWrite;
-	input[7:0] address, data;
-	output [7:0] out;
+	input[10:0] address;// 1024 + 256 = 1280
+	input [31:0] data
+	output [31:0] out;
 
-	reg[7:0] word[255:0];
+	reg[31:0] word[1280:1024];
 
 	always @(clock)begin
-		word[8'd100] <= 8'd200;
-		word[8'd101] <= 8'd7;
-		word[8'd102] <= 8'd200;
-		word[8'd103] <= 8'd9;	
+		word[11'd1024] <= 32'd200;
+		word[11'd1025] <= 32'd7;
+		word[11'd1026] <= 32'd200;
+		word[11'd1027] <= 32'd9;	
 		// word[8'd104] <= 8'd3;
 		// word[8'd105] <= 8'd4;
 		// word[8'd106] <= 8'd5;
@@ -35,5 +36,5 @@ module dataMemory(clock, memWrite, address, data, out);
 			word[address] <= data;
 		end
 	end
-	assign out = word[address];
+	assign out = word[(address >> 2) << 2];
 endmodule 

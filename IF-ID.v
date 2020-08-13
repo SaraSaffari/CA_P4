@@ -1,15 +1,15 @@
-module IF_ID_pipline(clk, rst, enb, Iinstruction, Ipc, Oinstruction, Opc);
+module IF_ID_pipline(clk, rst, enb, Iinstruction, IpcAdderOut, Oinstruction, OpcAdderOut);
 	input clk, rst, enb;
-	input [18:0]Iinstruction;
-	input [11:0]Ipc;
-	output [18:0] Oinstruction;
-	output [11:0] Opc;
+	input [31:0]Iinstruction;
+	input [31:0]IpcAdderOut;
+	output [31:0] Oinstruction;
+	output [31:0] OpcAdderOut;
 	
-	registerWitEnb #(.size(31)) Reg(
+	registerWitEnb #(.size(64)) Reg(
 		.clock(clk),
 		.reset(rst),
 		.enable(enb),
-		.regIn({Ipc, Iinstruction}),
-		.regOut({Opc, Oinstruction})
+		.regIn({IpcAdderOut, Iinstruction}),
+		.regOut({OpcAdderOut, Oinstruction})
 	);
 endmodule

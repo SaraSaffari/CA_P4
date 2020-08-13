@@ -1,37 +1,21 @@
-module stage1(clk, rst, pcEnb, pcAdderInputASel, pcOut, disp, pcInputSel, stackOutput, jumpAdr, instruction);
-	input pcAdderInputASel;
+module stage1(clk, rst, pcEnb, BrachTaken, PCAdder1Out, BranchAddress, InstMemoryOut);
+	input BrachTaken;
 	input clk, rst;
-	output [11:0] pcOut;
-	wire [11:0] pcIn;
-	input [11:0] disp;
-	input [1:0] pcInputSel;
-	input [11:0] stackOutput;
-	input [11:0] jumpAdr;
+	wire [31:0] pcOut;
+	wire [31:0] pcIn;
+	output [31:0] PCAdder1Out;
+	input [31:0] BranchAddress;
 	input pcEnb;
-	output [18:0] instruction;
-	wire [11:0] pcAdderResult, pcAdderInputA;
-	mux_2_input  #(.WORD_LENGTH (12)) pcAdderInputAmux (    //mux 1
-		.in1(disp), 
-		.in2(12'd1), 
-		.sel(pcAdderInputASel), 
-		.out(pcAdderInputA)
-	);
-
-	adder #(.size(12)) pcAdder(
-		.inputA(pcAdderInputA),
-		.inputB(pcOut),
-		.result(pcAdderResult)
-	);
-
-	mux_3_input #(.WORD_LENGTH(12)) pcInputMux (     // mux 2
-		.in1(pcAdderResult), 
-		.in2(stackOutput), 
-		.in3(jumpAdr), 
-		.sel(pcInputSel), 
+	output [31:0] InstMemoryOut;
+	
+	mux_2_input  #(.WORD_LENGTH (32)) MUX1 (    //pc input max
+		.in1(PCAdder1Out), 
+		.in2(BranchAddress), 
+		.sel(BrachTaken), 
 		.out(pcIn)
 	);
 
-	registerWitEnb #(.size(12)) pc(
+	registerWitEnb #(.size(32)) pc(
 		.clock(clk),
 		.reset(rst),
 		.enable(pcEnb),
@@ -39,10 +23,17 @@ module stage1(clk, rst, pcEnb, pcAdderInputASel, pcOut, disp, pcInputSel, stackO
 		.regOut(pcOut)
 	);
 
+	adder #(.size(32)) pcAdder(
+		.inputA(32'd4),
+		.inputB(pcOut),
+		.result(PCAdder1Out)
+	);
+
+
 	instructionMemory insMemory(
 		.clock(clk), 
 		.address(pcOut), 
-		.instruction(instruction)
+		.instruction(InstMemoryOut)
 	);
 
 endmodule

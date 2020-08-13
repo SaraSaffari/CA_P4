@@ -1,8 +1,8 @@
   module instructionMemory(clock, address, instruction);
 	input clock;
-	input [11:0] address;
-	output wire [18:0] instruction;
-	reg [18:0] commands [4095:0];
+	input [31:0] address;
+	output wire [31:0] instruction;
+	reg [31:0] commands [4294967295:0];
 	// value              2nd dimension of array
 	assign instruction = commands[address];
 
